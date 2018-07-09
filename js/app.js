@@ -1,3 +1,8 @@
+var restartButton = document.querySelector('i.fa.fa-repeat');
+var lastFlippedCard = null;
+var matchedCards = [];
+var moveCounter = 0;
+
 /*
  * Create a list that holds all of your cards
  */
@@ -11,6 +16,13 @@ var cards = ['fa-diamond', 'fa-diamond',
 						 'fa-bomb', 'fa-bomb'
 						];
 
+displayCards();
+resetCounter();
+addEvents();
+
+/*
+ * generate HTML code for a card
+ */
 function generateCard(card) {
  	return `<li class="card"><i class="fa ${card}"></i></li>`;	
  }
@@ -45,28 +57,32 @@ function displayCards() {
 	deck.innerHTML = cardsHTML.join('');
 }
 
-displayCards();
-resetCounter();
-
 /*
  *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
  */
 
 /*
- * set up the event listener for a card
+ * set up event listeners for the cards
  */
-var allCards = document.querySelectorAll('.card');
-var lastFlippedCard = null;
-var matchedCards = [];
-var moveCounter = 0;
-
-allCards.forEach(function(card) {
-	card.addEventListener('click', function(e) {
-		if (!card.classList.contains('open') && !card.classList.contains('show') && !card.classList.contains('match')) {
-			showCardSymbol(card);
-			addToOpenCards(card);	
-		}
+function addEvents() {
+	var allCards = document.querySelectorAll('.card');
+	allCards.forEach(function(card) {
+		card.addEventListener('click', function(e) {
+			if (!card.classList.contains('open') && !card.classList.contains('show') && !card.classList.contains('match')) {
+				showCardSymbol(card);
+				addToOpenCards(card);	
+			}
+		});
 	});
+}
+
+/*
+ * reset the table and start new game
+ */
+restartButton.addEventListener('click', function() {
+	displayCards();
+	resetCounter();
+	addEvents();
 });
 
 /*
@@ -74,6 +90,7 @@ allCards.forEach(function(card) {
  */
 function resetCounter() {
 	var counter = document.querySelector('.moves'); 
+	moveCounter = 0;
 	counter.innerHTML = '0';
 }
 
@@ -101,7 +118,7 @@ function hideCardSymbol(card) {
 }
 
 /*
- * match the cards 
+ * show the matched cards with 'proper' class 
  */ 
 function matchCardSymbol(card) {
 	card.classList.remove('open', 'show');
