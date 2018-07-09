@@ -180,9 +180,9 @@ function compareCards(card1, card2) {
 		lockCards(card1, card2);
 		matchedCards.push(card1);
 		if(matchedCards.length === 8) {
-			console.log('game over');
 			stopTimer();
-     	matchedCards = [];
+			matchedCards = [];
+			congratPopup();
 		}
 		lastFlippedCard = null;
 	}
@@ -233,3 +233,11 @@ function startTimer() {
 	}, 250);
 }
 
+/*
+ * popup at the end of the game
+ */
+function congratPopup() {
+	var actualTime = containerTimer.innerHTML;
+	var stars = document.querySelectorAll('ul.stars li').length;
+	alert("You won the game in " + moveCounter + " moves and in time " + actualTime + "! Star rating is:" + stars);
+}
