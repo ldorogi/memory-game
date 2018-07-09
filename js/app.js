@@ -46,10 +46,9 @@ function displayCards() {
 }
 
 displayCards();
-
+resetCounter();
 
 /*
- *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
  *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
  */
 
@@ -59,6 +58,7 @@ displayCards();
 var allCards = document.querySelectorAll('.card');
 var lastFlippedCard = null;
 var matchedCards = [];
+var moveCounter = 0;
 
 allCards.forEach(function(card) {
 	card.addEventListener('click', function(e) {
@@ -68,6 +68,23 @@ allCards.forEach(function(card) {
 		}
 	});
 });
+
+/*
+ * reset the move counter and display it on the page
+ */
+function resetCounter() {
+	var counter = document.querySelector('.moves'); 
+	counter.innerHTML = '0';
+}
+
+/*
+ * increment the move counter and display it on the page
+ */
+function incrementCounter() {
+	var counter = document.querySelector('.moves'); 
+	moveCounter += 1;
+	counter.innerHTML = moveCounter;
+}
 
 /*
  * flip the card and show the symbol on the card
@@ -108,6 +125,7 @@ function addToOpenCards(card) {
  * compare cards:
  * - if the cards do match, lock the cards in the open position
  * - if the cards do not match, remove the cards from the list and hide the card's symbol
+ * - increment the move counter
  */
 function compareCards(card1, card2) {
 	var firstCardType = card1.querySelector('i').classList.item(1);
@@ -123,6 +141,7 @@ function compareCards(card1, card2) {
 			lastFlippedCard = null;		
 		}, 500);
 	}
+	incrementCounter();
 }
 
 /*
