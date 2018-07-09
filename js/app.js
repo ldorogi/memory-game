@@ -49,12 +49,94 @@ displayCards();
 
 
 /*
- * set up the event listener for a card. If a card is clicked:
- *  - display the card's symbol (put this functionality in another function that you call from this one)
- *  - add the card to a *list* of "open" cards (put this functionality in another function that you call from this one)
- *  - if the list already has another card, check to see if the two cards match
- *    + if the cards do match, lock the cards in the open position (put this functionality in another function that you call from this one)
- *    + if the cards do not match, remove the cards from the list and hide the card's symbol (put this functionality in another function that you call from this one)
  *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
  *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
  */
+
+/*
+ * set up the event listener for a card
+ */
+var allCards = document.querySelectorAll('.card');
+var lastFlippedCard = null;
+var matchedCards = [];
+
+allCards.forEach(function(card) {
+	card.addEventListener('click', function(e) {
+		if (!card.classList.contains('open') && !card.classList.contains('show') && !card.classList.contains('match')) {
+			showCardSymbol(card);
+			addToOpenCards(card);	
+		}
+	});
+});
+
+/*
+ * flip the card and show the symbol on the card
+ */ 
+function showCardSymbol(card) {
+	card.classList.add('open', 'show');
+}
+
+/*
+ * hide the card's symbol
+ */ 
+function hideCardSymbol(card) {
+	card.classList.remove('open', 'show');
+}
+
+/*
+ * match the cards 
+ */ 
+function matchCardSymbol(card) {
+	card.classList.remove('open', 'show');
+	card.classList.add('match');
+}
+
+/*
+ * - add the card to a *list* of "open" cards
+ * - if the list already has another card, check to see if the two cards match
+ */
+function addToOpenCards(card) {
+	if(lastFlippedCard) {
+		compareCards(lastFlippedCard, card);
+	}	
+	else {
+		lastFlippedCard = card;
+	}
+}
+
+/*
+ * compare cards:
+ * - if the cards do match, lock the cards in the open position
+ * - if the cards do not match, remove the cards from the list and hide the card's symbol
+ */
+function compareCards(card1, card2) {
+	var firstCardType = card1.querySelector('i').classList.item(1);
+	var secondCardType = card2.querySelector('i').classList.item(1);
+	if(firstCardType === secondCardType) {
+		lockCards(card1, card2);
+		lastFlippedCard = null;
+	}
+	else {
+		setTimeout(function(){
+			hideCardSymbol(card1);
+			hideCardSymbol(card2);
+			lastFlippedCard = null;		
+		}, 500);
+	}
+}
+
+/*
+ * - if the cards do match, lock the cards in the open position
+ */
+function lockCards(card1, card2) {
+	matchCardSymbol(card1);
+	matchCardSymbol(card2);
+
+} 
+
+/*
+ * misc
+*/
+if(matchedCards.length === 16) {
+	// game over	 	
+}
