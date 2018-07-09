@@ -3,6 +3,7 @@ var lastFlippedCard = null;
 var matchedCards = [];
 var moveCounter = 0;
 
+
 /*
  * Create a list that holds all of your cards
  */
@@ -18,6 +19,7 @@ var cards = ['fa-diamond', 'fa-diamond',
 
 displayCards();
 resetCounter();
+displayStars();
 addEvents();
 
 /*
@@ -40,6 +42,19 @@ function shuffle(array) {
     }
 
     return array;
+}
+
+/*
+ * create and display the necessary number of stars up to 5 stars
+ */
+function displayStars() {
+	var stars = document.querySelector('.stars');
+	var childrenCount = stars.childElementCount;
+	for (var i = 0; i<(5 - childrenCount); i++){
+		var li = document.createElement('li');
+    stars.appendChild(li);
+    li.innerHTML = li.innerHTML + '<i class="fa fa-star"></i>';
+	}
 }
 
 /*
@@ -82,6 +97,7 @@ function addEvents() {
 restartButton.addEventListener('click', function() {
 	displayCards();
 	resetCounter();
+	displayStars()
 	addEvents();
 });
 
@@ -143,10 +159,12 @@ function addToOpenCards(card) {
  * - if the cards do match, lock the cards in the open position
  * - if the cards do not match, remove the cards from the list and hide the card's symbol
  * - increment the move counter
+ * - after each 4th move remove one star
  */
 function compareCards(card1, card2) {
 	var firstCardType = card1.querySelector('i').classList.item(1);
 	var secondCardType = card2.querySelector('i').classList.item(1);
+	var stars = document.querySelectorAll('ul.stars li');
 	if(firstCardType === secondCardType) {
 		lockCards(card1, card2);
 		lastFlippedCard = null;
@@ -159,6 +177,10 @@ function compareCards(card1, card2) {
 		}, 500);
 	}
 	incrementCounter();
+	if(stars.length > 0 && (moveCounter % 4 === 0)) {
+		document.querySelector('ul.stars').removeChild(stars[stars.length - 1]);	
+	}
+	
 }
 
 /*
