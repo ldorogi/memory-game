@@ -2,7 +2,11 @@ var restartButton = document.querySelector('i.fa.fa-repeat');
 var lastFlippedCard = null;
 var matchedCards = [];
 var moveCounter = 0;
-
+var firstCard = true;
+var timer;
+var second = 1000;
+var minute = second * 60;
+var containerTimer = document.getElementById('timer');
 
 /*
  * Create a list that holds all of your cards
@@ -21,6 +25,7 @@ displayCards();
 resetCounter();
 displayStars();
 addEvents();
+containerTimer.innerHTML = '00:00';
 
 /*
  * generate HTML code for a card
@@ -68,7 +73,6 @@ function displayCards() {
 	var cardsHTML = shuffle(cards).map(function(card) {
 		return generateCard(card);
 	});
-	
 	deck.innerHTML = cardsHTML.join('');
 }
 
@@ -99,6 +103,9 @@ restartButton.addEventListener('click', function() {
 	resetCounter();
 	displayStars()
 	addEvents();
+	firstCard = true;
+	containerTimer.innerHTML = '00:00';
+	stopTimer();
 });
 
 /*
@@ -150,7 +157,11 @@ function addToOpenCards(card) {
 		compareCards(lastFlippedCard, card);
 	}	
 	else {
+		if(firstCard === true) {
+			startTimer();
+		}
 		lastFlippedCard = card;
+		firstCard = false;
 	}
 }
 
@@ -167,6 +178,12 @@ function compareCards(card1, card2) {
 	var stars = document.querySelectorAll('ul.stars li');
 	if(firstCardType === secondCardType) {
 		lockCards(card1, card2);
+		matchedCards.push(card1);
+		if(matchedCards.length === 8) {
+			console.log('game over');
+			stopTimer();
+     	matchedCards = [];
+		}
 		lastFlippedCard = null;
 	}
 	else {
@@ -180,7 +197,6 @@ function compareCards(card1, card2) {
 	if(stars.length > 0 && (moveCounter % 4 === 0)) {
 		document.querySelector('ul.stars').removeChild(stars[stars.length - 1]);	
 	}
-	
 }
 
 /*
@@ -189,12 +205,31 @@ function compareCards(card1, card2) {
 function lockCards(card1, card2) {
 	matchCardSymbol(card1);
 	matchCardSymbol(card2);
-
 } 
 
 /*
- * misc
-*/
-if(matchedCards.length === 16) {
-	// game over	 	
+ * timer functions
+ */
+function stopTimer() {
+    clearInterval(timer);
 }
+
+function pad(n){
+  return ('00' + n).slice(-2);
+}
+
+function startTimer() {
+	var startTime = Date.now();
+	timer = setInterval(function(){
+	  var currentTime = Date.now();
+  	var difference = currentTime - startTime;
+		var minutes = pad(minute | 0);
+  	var seconds = pad(((difference % minute) / second) | 0);
+
+	  containerTimer.innerHTML = minutes + ':' + seconds;
+
+	// This only represents time between renders. Actual time rendered is based
+	// on the elapsed time calculated above.
+	}, 250);
+}
+
