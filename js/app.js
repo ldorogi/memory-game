@@ -3,10 +3,12 @@ let lastFlippedCard = null;
 let matchedCards = [];
 let moveCounter = 0;
 let firstCard = true;
+let secondOpenedCard = false;
 let timer;
 let second = 1000;
 let minute = second * 60;
 const containerTimer = document.getElementById('timer');
+
 
 /** 
 * @description Create a list that holds all of your cards
@@ -83,7 +85,7 @@ function addEvents() {
 	let allCards = document.querySelectorAll('.card');
 	allCards.forEach(function(card) {
 		card.addEventListener('click', function(e) {
-			if (!card.classList.contains('open') && !card.classList.contains('show') && !card.classList.contains('match')) {
+			if (!card.classList.contains('open') && !card.classList.contains('show') && !card.classList.contains('match') && !secondOpenedCard) {
 				showCardSymbol(card);
 				addToOpenCards(card);	
 			}
@@ -99,7 +101,10 @@ restartButton.addEventListener('click', function() {
 	resetCounter();
 	displayStars()
 	addEvents();
+	matchedCards = [];
 	firstCard = true;
+	secondOpenedCard = false;
+	lastFlippedCard = null;
 	containerTimer.innerHTML = '00:00';
 	stopTimer();
 });
@@ -150,6 +155,7 @@ function matchCardSymbol(card) {
 */
 function addToOpenCards(card) {
 	if(lastFlippedCard) {
+		secondOpenedCard = true;
 		compareCards(lastFlippedCard, card);
 	}	
 	else {
@@ -172,6 +178,12 @@ function compareCards(card1, card2) {
 	let firstCardType = card1.querySelector('i').classList.item(1);
 	let secondCardType = card2.querySelector('i').classList.item(1);
 	let stars = document.querySelectorAll('ul.stars li');
+  if(!firstCard) {
+		incrementCounter();	
+	}
+	if(stars.length > 0 && (moveCounter % 8 === 0)) {
+		document.querySelector('ul.stars').removeChild(stars[stars.length - 1]);	
+	}
 	if(firstCardType === secondCardType) {
 		lockCards(card1, card2);
 		matchedCards.push(card1);
@@ -181,17 +193,15 @@ function compareCards(card1, card2) {
 			congratPopup();
 		}
 		lastFlippedCard = null;
+		secondOpenedCard = false;
 	}
 	else {
 		setTimeout(function(){
 			hideCardSymbol(card1);
 			hideCardSymbol(card2);
-			lastFlippedCard = null;		
+			lastFlippedCard = null;	
+			secondOpenedCard = false;	
 		}, 500);
-	}
-	incrementCounter();
-	if(stars.length > 0 && (moveCounter % 8 === 0)) {
-		document.querySelector('ul.stars').removeChild(stars[stars.length - 1]);	
 	}
 }
 
@@ -235,5 +245,18 @@ function startTimer() {
 function congratPopup() {
 	const actualTime = containerTimer.innerHTML;
 	const stars = document.querySelectorAll('ul.stars li').length;
-	alert("You won the game in " + moveCounter + " moves and in time " + actualTime + "! Star rating is:" + stars);
+	if(confirm("You won the game in " + moveCounter + " moves and in time " + actualTime + "! Star rating is:" + stars + ". Would you like to start a new game?")) {
+		displayCards();
+		resetCounter();
+		displayStars()
+		addEvents();
+		matchedCards = [];
+		firstCard = true;
+		secondOpenedCard = false;
+		lastFlippedCard = null;
+		containerTimer.innerHTML = '00:00';
+		stopTimer();
+	} else {
+		// do nothing
+	}
 }
